@@ -10,6 +10,20 @@
 
 namespace {
 
+struct ExecutionBudget {
+    long long remaining;
+};
+
+void interrupt(lua_State* L, int gc) {
+    if (gc >= 0) {
+        return;
+    }
+    auto* budget = static_cast<ExecutionBudget*>(lua_callbacks(L)->userdata);
+    if (budget != nullptr && --budget->remaining <= 0) {
+        luaL_error(L, "script exceeded the execution limit");
+    }
+}
+
 void appendOutput(lua_State* L, const std::string& text) {
     lua_getglobal(L, "__output");
     const char* previous = lua_tostring(L, -1);
@@ -39,6 +53,29 @@ int l_print(lua_State* L) {
     return 0;
 }
 
+int l_loadstring(lua_State* L) {
+    size_t length = 0;
+    const char* source = luaL_checklstring(L, 1, &length);
+    lua_CompileOptions options{};
+    options.optimizationLevel = 1;
+    options.debugLevel = 1;
+    size_t size = 0;
+    char* bytecode = luau_compile(source, length, &options, &size);
+    if (bytecode == nullptr) {
+        lua_pushnil(L);
+        lua_pushstring(L, "compile failed");
+        return 2;
+    }
+    int status = luau_load(L, "=loadstring", bytecode, size, 0);
+    free(bytecode);
+    if (status != 0) {
+        lua_pushnil(L);
+        lua_insert(L, -2);
+        return 2;
+    }
+    return 1;
+}
+
 lua_State* createState() {
     lua_State* L = luaL_newstate();
     if (L == nullptr) {
@@ -47,8 +84,14 @@ lua_State* createState() {
     luaL_openlibs(L);
     lua_pushcfunction(L, l_print, "print");
     lua_setglobal(L, "print");
+    lua_pushcfunction(L, l_loadstring, "loadstring");
+    lua_setglobal(L, "loadstring");
     lua_pushstring(L, "");
     lua_setglobal(L, "__output");
+
+    lua_Callbacks* callbacks = lua_callbacks(L);
+    callbacks->userdata = new ExecutionBudget{50000000LL};
+    callbacks->interrupt = interrupt;
     return L;
 }
 
@@ -66,7 +109,9 @@ std::string finish(lua_State* L, int status) {
     if (output != nullptr) {
         result += output;
     }
+    auto* budget = static_cast<ExecutionBudget*>(lua_callbacks(L)->userdata);
     lua_close(L);
+    delete budget;
     return result;
 }
 

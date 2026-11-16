@@ -9,14 +9,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.EditText
+import android.widget.MultiAutoCompleteTextView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.mobileblox.v2.bridge.BridgeService
 import com.mobileblox.v2.bridge.FileRepository
+import com.mobileblox.v2.editor.CodeAutocomplete
+import com.mobileblox.v2.editor.ExampleScripts
+import com.mobileblox.v2.editor.ScriptHistory
 import com.mobileblox.v2.launcher.RobloxLauncher
 import com.mobileblox.v2.luau.LuauBridge
 import com.mobileblox.v2.overlay.OverlayService
@@ -33,7 +37,7 @@ import java.util.Locale
 
 class MainFragment : Fragment() {
 
-    private lateinit var editor: EditText
+    private lateinit var editor: MultiAutoCompleteTextView
     private lateinit var statusText: TextView
     private lateinit var bridgeInfo: TextView
     private lateinit var shizukuStatus: TextView
@@ -67,6 +71,7 @@ class MainFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         editor = view.findViewById(R.id.script_editor)
+        CodeAutocomplete.attach(editor, requireContext())
         statusText = view.findViewById(R.id.status_text)
         bridgeInfo = view.findViewById(R.id.bridge_info)
         shizukuStatus = view.findViewById(R.id.shizuku_status)
@@ -77,6 +82,8 @@ class MainFragment : Fragment() {
             editor.setText("")
             log("Editor limpiado")
         }
+        view.findViewById<Button>(R.id.btn_history).setOnClickListener { showHistory() }
+        view.findViewById<Button>(R.id.btn_examples).setOnClickListener { showExamples() }
         view.findViewById<Button>(R.id.btn_save).setOnClickListener { saveScript() }
         view.findViewById<Button>(R.id.btn_open).setOnClickListener { openScript() }
         view.findViewById<Button>(R.id.btn_launch_roblox).setOnClickListener { launchRoblox() }
@@ -136,6 +143,7 @@ class MainFragment : Fragment() {
             toast("Script vacío")
             return
         }
+        ScriptHistory.add(requireContext(), source)
         val order = BridgeService.scriptQueue.execute(source)
         log("Encolado #$order (${source.lines().size} líneas)")
 
@@ -151,6 +159,41 @@ class MainFragment : Fragment() {
             }
             log(output.trimEnd().ifEmpty { "(sin salida)" })
         }
+    }
+
+    private fun showHistory() {
+        val entries = ScriptHistory.all(requireContext())
+        if (entries.isEmpty()) {
+            toast(getString(R.string.history_empty))
+            return
+        }
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.history)
+            .setItems(entries.map { preview(it) }.toTypedArray()) { _, which ->
+                editor.setText(entries[which])
+            }
+            .setNeutralButton(R.string.clear_history) { _, _ ->
+                ScriptHistory.clear(requireContext())
+                log("Historial borrado")
+            }
+            .setNegativeButton(R.string.close, null)
+            .show()
+    }
+
+    private fun showExamples() {
+        val examples = ExampleScripts.all
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.examples)
+            .setItems(examples.map { it.first }.toTypedArray()) { _, which ->
+                editor.setText(examples[which].second)
+            }
+            .setNegativeButton(R.string.close, null)
+            .show()
+    }
+
+    private fun preview(script: String): String {
+        val firstLine = script.lineSequence().firstOrNull()?.trim().orEmpty()
+        return firstLine.take(70).ifEmpty { "(script)" }
     }
 
     private fun launchRoblox() {

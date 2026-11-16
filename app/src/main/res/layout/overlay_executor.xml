@@ -28,7 +28,7 @@
             android:textSize="16sp"
             android:textStyle="bold" />
 
-        <EditText
+        <MultiAutoCompleteTextView
             android:id="@+id/overlay_editor"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -79,6 +79,32 @@
                 android:layout_marginStart="6dp"
                 android:layout_weight="1"
                 android:text="@string/close"
+                android:textSize="11sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/overlay_history"
+                style="@style/Widget.MobileBlox.Button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/history"
+                android:textSize="11sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/overlay_examples"
+                style="@style/Widget.MobileBlox.Button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:layout_weight="1"
+                android:text="@string/examples"
                 android:textSize="11sp" />
         </LinearLayout>
 

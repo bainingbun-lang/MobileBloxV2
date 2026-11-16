@@ -17,6 +17,8 @@ Además se añadió lo que pediste para el flujo tipo launcher:
 - Burbuja flotante móvil sobre cualquier app (incluido Roblox); al tocarla se abre un executor centrado con editor y salida.
 - Permisos privilegiados vía **Shizuku** (shell ADB): conceder overlay, notificaciones y ejecutar comandos.
 - **Compilador y runtime Luau nativo** (arm64-v8a) para ejecutar scripts de verdad dentro de la app.
+- **API simulada de Roblox** (`game`, `workspace`, `Players`, `Instance`, `Vector3`, `CFrame`, `Color3`, `Enum`, `task`, `loadstring`) para que los scripts típicos funcionen en el sandbox.
+- **Autocompletado, historial (20 scripts) y ejemplos** en el editor principal y en el panel flotante.
 
 ### Límite importante (léelo)
 
@@ -53,6 +55,8 @@ Ruta local: `/data/data/com.termux/files/usr/tmp/opencode/ExternalExecutor` (com
 | `shizuku` | Estado del binder/permiso | Funcional |
 | `launchroblox` | `launcher/RobloxLauncher.kt` | Funcional |
 | Editor + ejecución local | `MainFragment.kt` | Funcional |
+| API simulada de Roblox | `luau/RobloxApiPrelude.kt` | Funcional (sandbox in-app) |
+| Autocompletado / historial / ejemplos | `editor/` + UI | Funcional |
 | Abrir Roblox + PiP | `MainActivity.kt` | Funcional (PiP según dispositivo) |
 | Burbuja flotante + panel centrado | `overlay/OverlayService.kt` + `overlay_executor.xml` | Funcional con permiso overlay |
 | Pruebas JVM | 12 pruebas en `app/src/test/.../bridge/` | Pasando |
@@ -83,7 +87,14 @@ Comandos disponibles por el bridge (si Shizuku está autorizado):
 - `app/src/main/cpp/CMakeLists.txt` compila `Luau.Compiler`, `Luau.VM`, `Luau.Ast` y el wrapper `luau_jni.cpp` como `libmobileblox_luau.so`.
 - Funciones JNI: `nativeCompile`, `nativeRun`, `nativeRunBytecode`.
 - `print` se captura en `__output` y se devuelve como salida del script.
+- `loadstring` se implementa en C++ con `luau_compile` + `luau_load`.
+- Límite de ejecución: 50 millones de instrucciones por script para evitar bucles infinitos.
+- `luau/RobloxApiPrelude.kt` se antepone a cada script (y a `compile`) con un sandbox de la API de Roblox:
+  - `game:GetService("Workspace" | "Players" | "RunService")`, `workspace`, `Players.LocalPlayer`.
+  - `Instance.new` con `Parent`, `Name`, `FindFirstChild`, `GetChildren`, `GetDescendants`, `WaitForChild`, `IsA`, `Destroy`, `Clone`, atributos.
+  - `Vector3`, `CFrame`, `Color3`, `UDim`/`UDim2`, `Enum`, `Random`, `typeof`, `getgenv`, `task.wait/spawn/delay/defer`.
 - Verificado en dispositivo ARM64: compila y ejecuta `print('hola', 2+2)` → `hola\t4`.
+- La prelude se validó con `luau-compile --only-parse` y con el CLI `luau` (instancias, jerarquía, vectores y humanoid).
 
 El APK contiene `lib/arm64-v8a/libmobileblox_luau.so` (≈1.2 MB) y `libc++_shared.so`.
 
@@ -94,7 +105,8 @@ El APK contiene `lib/arm64-v8a/libmobileblox_luau.so` (≈1.2 MB) y `libc++_shar
 3. Pulsar **Burbuja flotante** para tener el acceso flotante.
 4. Pulsar **Abrir Roblox** (o abrir Roblox manualmente).
 5. Tocar la burbuja → se abre el executor flotante centrado (editor + salida + botones Execute/Limpiar/Cerrar). La burbuja se arrastra para moverla.
-6. Escribir un script Luau y pulsar **Execute**: se ejecuta en el runtime de la app y la salida aparece en el panel. También se encola para clientes del bridge (`listen`).
+6. Escribir un script Luau y pulsar **Execute**: se ejecuta en el runtime de la app con la API simulada y la salida aparece en el panel. También se encola para clientes del bridge (`listen`).
+7. **Historial** recupera los últimos 20 scripts; **Ejemplos** inserta snippets listos para probar. El editor autocompleta palabras de la API al escribir.
 
 ## 7. Seguridad
 
@@ -125,4 +137,5 @@ Workflow: `.github/workflows/build-arm64.yml`
 - PiP y overlay dependen del fabricante; en algunos dispositivos PiP puede estar deshabilitado.
 - El servicio de burbuja es `foregroundServiceType="specialUse"`; requiere notificación (Android 13+).
 - Si se quiere un ejecutor real dentro de Roblox haría falta root + un inyector nativo específico por versión de Roblox; no es viable en este entorno.
-- Próximo paso útil: añadir una librería de APIs simuladas (`game`, `workspace`, etc.) al runtime Luau para que los scripts típicos de Roblox no fallen al ejecutarse localmente.
+- La API simulada es un subconjunto: no incluye física real, red, `HttpService`, `TweenService` ni renderizado. Los scripts que dependan de esos servicios fallarán o serán no-op.
+- Próximo paso útil: ampliar la API simulada (`HttpService`, `TweenService`, `RunService` con señales reales) y añadir un explorador de instancias en la UI.

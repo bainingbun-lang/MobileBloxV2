@@ -28,6 +28,10 @@
     <string name="clear">Limpiar</string>
     <string name="empty_script">Script vacío</string>
     <string name="running">Ejecutando…</string>
+    <string name="history">Historial</string>
+    <string name="clear_history">Borrar historial</string>
+    <string name="history_empty">Historial vacío</string>
+    <string name="examples">Ejemplos</string>
     <string name="roblox_missing">Roblox no está instalado</string>
     <string name="luau_missing">Luau nativo no disponible en este build</string>
     <string name="project">Project</string>

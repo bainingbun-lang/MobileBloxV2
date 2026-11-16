@@ -107,7 +107,7 @@
             android:text="@string/floating_bubble"
             android:textSize="11sp" />
 
-        <EditText
+        <MultiAutoCompleteTextView
             android:id="@+id/script_editor"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -147,6 +147,30 @@
                 android:layout_marginStart="8dp"
                 android:layout_weight="1"
                 android:text="@string/clear_console" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_history"
+                style="@style/Widget.MobileBlox.Button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/history" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_examples"
+                style="@style/Widget.MobileBlox.Button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:text="@string/examples" />
         </LinearLayout>
 
         <LinearLayout

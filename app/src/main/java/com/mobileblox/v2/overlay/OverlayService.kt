@@ -19,11 +19,16 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
 import android.view.WindowManager
-import android.widget.EditText
+import android.widget.MultiAutoCompleteTextView
 import android.widget.ScrollView
 import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.app.NotificationCompat
 import com.mobileblox.v2.R
+import com.mobileblox.v2.editor.CodeAutocomplete
+import com.mobileblox.v2.editor.ExampleScripts
+import com.mobileblox.v2.editor.ScriptHistory
 import com.mobileblox.v2.luau.LuauBridge
 import kotlin.math.abs
 
@@ -132,7 +137,8 @@ class OverlayService : Service() {
         }
         val themed = ContextThemeWrapper(this, R.style.Theme_MobileBlox)
         val view = LayoutInflater.from(themed).inflate(R.layout.overlay_executor, null)
-        val editor = view.findViewById<EditText>(R.id.overlay_editor)
+        val editor = view.findViewById<MultiAutoCompleteTextView>(R.id.overlay_editor)
+        CodeAutocomplete.attach(editor, themed)
         val output = view.findViewById<TextView>(R.id.overlay_output)
         val outputScroll = view.findViewById<ScrollView>(R.id.overlay_output_scroll)
 
@@ -157,6 +163,12 @@ class OverlayService : Service() {
         }
         view.findViewById<View>(R.id.overlay_execute).setOnClickListener {
             runScript(editor, output, outputScroll)
+        }
+        view.findViewById<View>(R.id.overlay_history).setOnClickListener {
+            showHistory(editor)
+        }
+        view.findViewById<View>(R.id.overlay_examples).setOnClickListener {
+            showExamples(editor)
         }
 
         view.isFocusableInTouchMode = true
@@ -187,12 +199,17 @@ class OverlayService : Service() {
         bubble?.visibility = View.VISIBLE
     }
 
-    private fun runScript(editor: EditText, output: TextView, outputScroll: ScrollView) {
+    private fun runScript(
+        editor: MultiAutoCompleteTextView,
+        output: TextView,
+        outputScroll: ScrollView,
+    ) {
         val source = editor.text.toString()
         if (source.isBlank()) {
             output.text = getString(R.string.empty_script)
             return
         }
+        ScriptHistory.add(this, source)
         output.text = getString(R.string.running)
         Thread {
             val result = if (!LuauBridge.available) {
@@ -206,6 +223,46 @@ class OverlayService : Service() {
                 outputScroll.post { outputScroll.fullScroll(View.FOCUS_DOWN) }
             }
         }.start()
+    }
+
+    private fun showHistory(editor: MultiAutoCompleteTextView) {
+        val entries = ScriptHistory.all(this)
+        if (entries.isEmpty()) {
+            Toast.makeText(this, R.string.history_empty, Toast.LENGTH_SHORT).show()
+            return
+        }
+        val themed = ContextThemeWrapper(this, R.style.Theme_MobileBlox)
+        val dialog = AlertDialog.Builder(themed)
+            .setTitle(R.string.history)
+            .setItems(entries.map { preview(it) }.toTypedArray()) { _, which ->
+                editor.setText(entries[which])
+            }
+            .setNeutralButton(R.string.clear_history) { _, _ ->
+                ScriptHistory.clear(this)
+            }
+            .setNegativeButton(R.string.close, null)
+            .create()
+        dialog.window?.setType(overlayType())
+        dialog.show()
+    }
+
+    private fun showExamples(editor: MultiAutoCompleteTextView) {
+        val examples = ExampleScripts.all
+        val themed = ContextThemeWrapper(this, R.style.Theme_MobileBlox)
+        val dialog = AlertDialog.Builder(themed)
+            .setTitle(R.string.examples)
+            .setItems(examples.map { it.first }.toTypedArray()) { _, which ->
+                editor.setText(examples[which].second)
+            }
+            .setNegativeButton(R.string.close, null)
+            .create()
+        dialog.window?.setType(overlayType())
+        dialog.show()
+    }
+
+    private fun preview(script: String): String {
+        val firstLine = script.lineSequence().firstOrNull()?.trim().orEmpty()
+        return firstLine.take(70).ifEmpty { "(script)" }
     }
 
     private fun overlayType(): Int =

@@ -19,13 +19,16 @@ object LuauBridge {
 
     fun compile(source: String): ByteArray {
         check(available) { "Luau native library is not available in this build" }
-        return nativeCompile(source) ?: throw IllegalStateException("Luau compile failed")
+        return nativeCompile(withPrelude(source)) ?: throw IllegalStateException("Luau compile failed")
     }
 
     fun run(source: String): String {
         check(available) { "Luau native library is not available in this build" }
-        return nativeRun(source) ?: "error: native run failed"
+        return nativeRun(withPrelude(source)) ?: "error: native run failed"
     }
+
+    private fun withPrelude(source: String): String =
+        RobloxApiPrelude.SOURCE + "\n" + source
 
     fun runBytecode(bytecode: ByteArray): String {
         check(available) { "Luau native library is not available in this build" }
