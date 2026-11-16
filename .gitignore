@@ -1,0 +1,27 @@
+# Build outputs
+build/
+app/build/
+artifacts/
+.gradle/
+local.properties
+
+# Native / CMake
+.cxx/
+*.so
+*.a
+*.o
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Logs
+*.log
+
+# Signing
+*.jks
+*.keystore
+
+# OS
+.DS_Store

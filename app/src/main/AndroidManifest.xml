@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.mobileblox.v2">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -16,10 +15,6 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <!-- Native library loading -->
-    <uses-native-library
-        android:name="libc++_shared"
-        android:required="true" />
-
     <application
         android:name=".MobileBloxApplication"
         android:allowBackup="true"

@@ -38,8 +38,6 @@
         <item name="textInputStyle">@style/Widget.MobileBlox.TextInputLayout</item>
         <item name="chipStyle">@style/Widget.MobileBlox.Chip</item>
 
-        <!-- Divider -->
-        <item name="dividerColor">@color/divider</item>
     </style>
 
     <!-- No Action Bar variant -->
@@ -76,7 +74,6 @@
         <item name="boxStrokeColor">@color/divider</item>
         <item name="boxStrokeWidth">1dp</item>
         <item name="boxStrokeWidthFocused">2dp</item>
-        <item name="boxStrokeColorFocused">@color/accent_electric_blue</item>
         <item name="hintTextColor">@color/text_gray</item>
         <item name="android:textColorHint">@color/text_gray</item>
     </style>
@@ -106,14 +103,14 @@
     </style>
 
     <!-- Dialog theme -->
-    <style name="Theme.MobileBlox.Dialog" parent="Theme.Material3.Dialog">
+    <style name="Theme.MobileBlox.Dialog" parent="Theme.Material3.Dark.Dialog">
         <item name="android:background">@color/panel_dark_gray</item>
         <item name="colorSurface">@color/panel_dark_gray</item>
         <item name="colorOnSurface">@color/text_white</item>
     </style>
 
     <!-- Bottom sheet theme -->
-    <style name="Theme.MobileBlox.BottomSheet" parent="Theme.Material3.BottomSheetDialog">
+    <style name="Theme.MobileBlox.BottomSheet" parent="Theme.Material3.Dark.BottomSheetDialog">
         <item name="android:background">@color/panel_dark_gray</item>
         <item name="colorSurface">@color/panel_dark_gray</item>
         <item name="colorOnSurface">@color/text_white</item>

@@ -1,3 +1,0 @@
-/data/data/com.termux/files/home/MobileBloxV2-main/build/termux-arm64/_deps/lz4-subbuild/CMakeFiles/lz4-populate.dir
-/data/data/com.termux/files/home/MobileBloxV2-main/build/termux-arm64/_deps/lz4-subbuild/CMakeFiles/edit_cache.dir
-/data/data/com.termux/files/home/MobileBloxV2-main/build/termux-arm64/_deps/lz4-subbuild/CMakeFiles/rebuild_cache.dir
