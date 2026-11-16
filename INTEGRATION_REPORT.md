@@ -2,121 +2,127 @@
 
 Fecha: 2026-11-16
 Repositorio: `bainingbun-lang/MobileBloxV2` (rama `master`)
-Commit de integración: `6dca9af` (corrección de cabeceras: `ba86f39`)
+Versión: `2.1.0` (versionCode 3)
+Commit de esta iteración: `0bae8d6`
+CI: run `43955417790` (verde, 12/12 pruebas)
 
 ## 1. Resumen
 
-Se analizó el proyecto [ExternalExecutor](https://github.com/ChimeraLle-Real/ExternalExecutor) (MIT, Copyright (c) 2025 ChimeraLle-Real) y se integraron en MobileBloxV2 las capacidades que son portables a Android/ARM64 **sin eliminar ni romper la funcionalidad existente**. El ejecutor original es una aplicación Windows x64 (Win32 + WinForms) que ataca un proceso Roblox de escritorio; su núcleo (memoria, hooks, bytecode Luau, UI WinForms) no es portable a Android y no se copió.
+Se analizó [ExternalExecutor](https://github.com/ChimeraLle-Real/ExternalExecutor) (MIT, Copyright (c) 2025 ChimeraLle-Real) y se integró en MobileBloxV2 todo lo que es portable a Android/ARM64 sin romper la funcionalidad existente.
 
-Lo integrado es la capa de automatización y comunicación: servidor HTTP local con el mismo protocolo del bridge, proxy HTTP, repositorio de archivos en sandbox, cola de scripts y editor en la UI. Todo compila, pasa pruebas y genera APK ARM64.
+Además se añadió lo que pediste para el flujo tipo launcher:
+
+- Abrir Roblox desde la app.
+- Minimizar la app en picture-in-picture (PiP).
+- Burbuja flotante sobre cualquier app (incluido Roblox); al tocarla se abre el executor.
+- Permisos privilegiados vía **Shizuku** (shell ADB): conceder overlay, notificaciones y ejecutar comandos.
+- **Compilador y runtime Luau nativo** (arm64-v8a) para ejecutar scripts de verdad dentro de la app.
+
+### Límite importante (léelo)
+
+El executor **no inyecta scripts en Roblox**. Los scripts se ejecutan en el runtime Luau propio de la app; no leen ni escriben la memoria de Roblox, no lo modifican y no se conectan a su proceso. Shizuku solo da permisos de shell/ADB, no acceso a la memoria privada de otras apps. Un "cliente modificado" requeriría root + ingeniería inversa del APK de Roblox y rompería la firma/ToS; no se implementó.
 
 ## 2. Fuente analizada
 
 Ruta local: `/data/data/com.termux/files/usr/tmp/opencode/ExternalExecutor` (commit `3b6362f`).
 
-Componentes revisados:
-
-| Archivo | Rol en el original | Portable a Android |
+| Archivo | Rol en el original | Estado en Android |
 |---|---|---|
-| `ExternalExecutor/Bridge.hpp` | Servidor HTTP `127.0.0.1:9611`, ruta `/handle`, token | Sí (protocolo) |
-| `ExternalExecutor/Utils/Bytecode.hpp` | Codificador de bytecode Luau (`opcode * 227`) | No (requiere bytecode Luau nativo) |
-| `ExternalExecutor/Instance.hpp` | Escritura de instancias en memoria del proceso | No (Win32) |
-| `ExternalExecutor/Memory.hpp`, `Process.hpp`, `Offsets.hpp` | Lectura/escritura de memoria y offsets de Roblox | No (Win32/x64) |
-| `ExternalExecutor/Init.lua` | Script Luau de inicialización del lado del juego | No aplica sin inyección |
-| `ExternalExecutorUI/Form1.cs` | UI WinForms | No (reemplazada por UI Android) |
+| `ExternalExecutor/Bridge.hpp` | HTTP `127.0.0.1:9611`, `/handle`, token | Portado (protocolo compatible) |
+| `ExternalExecutor/Utils/Bytecode.hpp` | Codificador de bytecode Luau | Sustituido por el compilador Luau nativo |
+| `ExternalExecutor/Instance.hpp` | Escritura de instancias en memoria | No portado (Win32) |
+| `Memory.hpp`, `Process.hpp`, `Offsets.hpp` | Memoria/offsets del proceso | No portado (Win32/x64) |
+| `ExternalExecutor/Init.lua` | Script de inicialización | No aplica sin inyección |
+| `ExternalExecutorUI/Form1.cs` | UI WinForms | Sustituida por UI Android + burbuja flotante |
 
 ## 3. Qué se integró
 
-| Capacidad | Implementación Android | Estado |
+| Capacidad | Implementación | Estado |
 |---|---|---|
-| Servidor bridge local | `BridgeServer.kt` (NanoHTTPD en `127.0.0.1:9611`, `POST /handle`) | Funcional |
-| Autenticación por token | `BridgeTokenStore.kt` + cabecera `X-Bridge-Token` | Funcional |
-| Parseo del protocolo | `BridgeCommand.kt` (`tipo\nclientId\njson\npayload`) | Funcional |
-| Comandos `ping`, `identify` | `BridgeDispatcher.kt` | Funcional |
-| Comandos `request` (HTTP) | `HttpProxy.kt` (OkHttp, JSON `b,c,r,v,h`) | Funcional |
-| `readfile`, `writefile`, `listfiles`, `exists` | `FileRepository.kt` (sandbox en `filesDir/MobileBlox`) | Funcional |
-| `listen` (polling de scripts) | `ScriptQueue.kt` | Funcional |
-| `compile`, `setscriptbytecode` | Responden `501 Not Implemented` | Pendiente (núcleo nativo) |
-| Editor de scripts + cola | `MainFragment.kt` + `fragment_main.xml` | Funcional |
-| Ciclo de vida del bridge | `BridgeService.kt` + `MobileBloxApplication.kt` | Funcional |
-| Pruebas unitarias JVM | 12 pruebas en `app/src/test/.../bridge/` | Pasando |
+| Bridge local con token | `bridge/BridgeServer.kt` | Funcional |
+| Protocolo `tipo\nclientId\njson\npayload` | `bridge/BridgeCommand.kt` | Funcional |
+| `ping`, `identify` | `bridge/BridgeDispatcher.kt` | Funcional |
+| `request` (proxy HTTP) | `bridge/HttpProxy.kt` (OkHttp) | Funcional |
+| `readfile`, `writefile`, `listfiles`, `exists` | `bridge/FileRepository.kt` (sandbox) | Funcional |
+| `listen` (cola de scripts) | `bridge/ScriptQueue.kt` | Funcional |
+| `compile` | `luau/LuauBridge.kt` + JNI Luau | Funcional |
+| `run` | Runtime Luau in-app | Funcional |
+| `setscriptbytecode` | Carga bytecode Luau y lo ejecuta | Funcional |
+| `shell` | `shizuku/ShizukuManager.kt` (shell Shizuku) | Funcional con Shizuku |
+| `grant`, `grantoverlay` | `pm grant` / `appops` vía Shizuku | Funcional con Shizuku |
+| `shizuku` | Estado del binder/permiso | Funcional |
+| `launchroblox` | `launcher/RobloxLauncher.kt` | Funcional |
+| Editor + ejecución local | `MainFragment.kt` | Funcional |
+| Abrir Roblox + PiP | `MainActivity.kt` | Funcional (PiP según dispositivo) |
+| Burbuja flotante | `overlay/OverlayService.kt` | Funcional con permiso overlay |
+| Pruebas JVM | 12 pruebas en `app/src/test/.../bridge/` | Pasando |
 
-## 4. Protocolo del bridge
+## 4. Shizuku
 
-```
-POST http://127.0.0.1:9611/handle
-X-Bridge-Token: <token generado>
+La app usa `dev.rikka.shizuku:api:13.1.5` y `provider:13.1.5`.
 
-<cuerpo>
-tipo
-clientId
-{json de settings}
-payload (resto, puede contener saltos de línea)
-```
+Requisitos:
 
-Respuesta: JSON. El token se genera una vez y se guarda en `SharedPreferences` (`bridge_prefs`). La UI muestra la URL y el token en `bridge_info`.
+1. Instalar la app **Shizuku** (Play Store / GitHub) y activarla por ADB o root.
+2. Abrir MobileBlox V2 → **Autorizar Shizuku** → aceptar.
+3. Pulsar **Permiso overlay** (ejecuta `appops set com.mobileblox.v2 SYSTEM_ALERT_WINDOW allow`).
+4. Pulsar **Burbuja flotante**; la burbuja queda sobre Roblox y al tocarla se abre el executor.
 
-Comandos de escritura devuelven `{ "ok": true, ... }`; errores devuelven `{ "ok": false, "error": "..." }` con código HTTP 400/401/404/500.
+Comandos disponibles por el bridge (si Shizuku está autorizado):
 
-## 5. Seguridad
+- `shell` → ejecuta `sh -c <payload>` como UID shell y devuelve `code/stdout/stderr`.
+- `grant` → `pm grant` para una lista blanca de permisos.
+- `grantoverlay` → concede `SYSTEM_ALERT_WINDOW` por appops.
+- `shizuku` → `{available, permission}`.
+- `launchroblox` → abre el cliente Roblox instalado.
 
-- El servidor escucha **solo** en `127.0.0.1` (no expuesto a la red).
-- Token aleatorio obligatorio en cada petición.
-- Todas las rutas de archivo se resuelven con `File.getCanonicalFile()` y deben quedar dentro del sandbox; se rechaza cualquier intento de `..`.
-- Límite de escritura: 5 MB por archivo.
-- Sin evasión de anticheat, sin ocultamiento, sin manipulación de otros procesos.
+## 5. Luau nativo
 
-## 6. Qué no se portó y por qué
+- Fuente: `https://github.com/luau-lang/luau` commit `c87565b8b0db5d5d5bfd2b8b00ad6573e5d06d9f`.
+- Se clona en CI con `scripts/fetch-luau.sh` (carpeta ignorada por git).
+- `app/src/main/cpp/CMakeLists.txt` compila `Luau.Compiler`, `Luau.VM`, `Luau.Ast` y el wrapper `luau_jni.cpp` como `libmobileblox_luau.so`.
+- Funciones JNI: `nativeCompile`, `nativeRun`, `nativeRunBytecode`.
+- `print` se captura en `__output` y se devuelve como salida del script.
+- Verificado en dispositivo ARM64: compila y ejecuta `print('hola', 2+2)` → `hola\t4`.
 
-- **Memoria/offsets/hooks de Roblox de escritorio**: dependen de Win32 (`OpenProcess`, `ReadProcessMemory`, `WriteProcessMemory`) y de offsets x64 de una versión concreta de Roblox. No aplican a Android ARM64.
-- **Codificador de bytecode Luau**: `Bytecode.hpp` transforma bytecode ya compilado (`opcode * 227`). Requiere un compilador Luau nativo y el runtime del juego; no hay sustituto Kotlin equivalente. Los comandos quedan como `501` hasta integrar un compilador nativo.
-- **`Init.lua` / inyección**: requiere un mecanismo de ejecución dentro del cliente, que no existe en este proyecto.
-- **UI WinForms**: sustituida por la UI Android existente.
+El APK contiene `lib/arm64-v8a/libmobileblox_luau.so` (≈1.2 MB) y `libc++_shared.so`.
 
-La carpeta `NativeLib/` sigue sin compilarse: su `CMakeLists.txt` referencia fuentes inexistentes (`../MobileBloxV2-main/NativeLib/...`). El código tolera la ausencia de la librería con `UnsatisfiedLinkError` controlado.
+## 6. Flujo de uso
 
-## 7. Pruebas y CI
+1. Instalar `MobileBloxV2-ARM64.apk`.
+2. (Opcional) Autorizar Shizuku y conceder overlay.
+3. Pulsar **Burbuja flotante** para tener el acceso flotante.
+4. Pulsar **Abrir Roblox** (o abrir Roblox manualmente).
+5. Tocar la burbuja → se abre el executor.
+6. Escribir un script Luau y pulsar **Execute**: se ejecuta en el runtime de la app y se muestra la salida en el log. También se encola para clientes del bridge (`listen`).
+
+## 7. Seguridad
+
+- El bridge escucha solo en `127.0.0.1` y exige `X-Bridge-Token`.
+- Archivos confinados a `filesDir/MobileBlox` (canonical path + rechazo de `..`, límite 5 MB).
+- Shizuku se usa solo para permisos/overlay/shell; no hay evasión de anticheat ni ocultamiento.
+- No se modifica ni redistribuye el APK de Roblox.
+
+## 8. Pruebas y CI
 
 Workflow: `.github/workflows/build-arm64.yml`
 
-Pasos: checkout → JDK 17 → Android SDK (`platforms;android-34`, `build-tools;34.0.0`) → `assembleRelease` → `testReleaseUnitTest` → verificación de APK → subida de artefactos → release en tag.
+- JDK 17, Android SDK 34, NDK `26.1.10909125`, CMake `3.22.1`.
+- `scripts/fetch-luau.sh` → `assembleRelease` → `testReleaseUnitTest` → verificación/subida del APK.
+- Pruebas: `BridgeCommandParserTest` (3), `ScriptQueueTest` (4), `FileRepositoryTest` (3), `HttpProxyTest` (2) → **12/12**.
+- Run verde: `43955417790`.
 
-Pruebas:
+## 9. Artefactos
 
-- `BridgeCommandParserTest` (3)
-- `ScriptQueueTest` (4)
-- `FileRepositoryTest` (3, incluye rechazo de path traversal)
-- `HttpProxyTest` (2, con MockWebServer)
-
-Resultado: **12/12 pruebas pasando**. Run de CI: `43952876951`.
-
-## 8. Artefactos
-
-- APK: `artifacts/app-release.apk` (6.1 MB)
+- APK: `artifacts/app-release.apk` (7.0 MB)
 - Copia para instalar: `/sdcard/Download/MobileBloxV2-ARM64.apk`
-- Resultados de pruebas: artefacto `test-results` del run de CI
-- Backup previo a la integración: `/sdcard/Download/MobileBloxV2-backup-20261116_203859.tar.gz`
-
-El APK está firmado con la clave de debug (no hay `keystore.jks` en el repo). Para distribución hay que añadir un keystore de release.
-
-## 9. Uso
-
-1. Instalar `MobileBloxV2-ARM64.apk`.
-2. Abrir la app: el bridge arranca automáticamente y muestra URL y token.
-3. Enviar peticiones desde otro proceso/dispositivo en el mismo host:
-
-```bash
-curl -s http://127.0.0.1:9611/handle \
-  -H "X-Bridge-Token: <token>" \
-  --data-binary $'ping\ncli-1\n{}\n'
-```
-
-4. Escribir un script en el editor y pulsar **Ejecutar**: se encola y se entrega al siguiente `listen`.
-5. **Guardar** / **Abrir** usan `filesDir/MobileBlox/scripts/main.lua`.
+- Backup previo: `/sdcard/Download/MobileBloxV2-backup-20261116_203859.tar.gz`
+- Firmado con clave de debug (no hay `keystore.jks` en el repo).
 
 ## 10. Limitaciones y próximos pasos
 
-- `compile` y `setscriptbytecode` sin implementar (requieren núcleo nativo Luau).
-- El bridge no está ligado a un servicio en primer plano; el sistema puede matar el proceso en segundo plano.
-- Sin autenticación más allá del token; no exponer el puerto fuera de localhost.
-- Próximo paso natural: integrar un compilador Luau nativo (por ejemplo, `luau-compile`) como librería JNI y conectar `compile`/`setscriptbytecode`.
+- **Sin inyección en Roblox**: los scripts no afectan al juego. Es una limitación técnica de Android/Shizuku, no un bug.
+- PiP y overlay dependen del fabricante; en algunos dispositivos PiP puede estar deshabilitado.
+- El servicio de burbuja es `foregroundServiceType="specialUse"`; requiere notificación (Android 13+).
+- Si se quiere un ejecutor real dentro de Roblox haría falta root + un inyector nativo específico por versión de Roblox; no es viable en este entorno.
+- Próximo paso útil: añadir una librería de APIs simuladas (`game`, `workspace`, etc.) al runtime Luau para que los scripts típicos de Roblox no fallen al ejecutarse localmente.
