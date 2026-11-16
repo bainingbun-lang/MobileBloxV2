@@ -5,6 +5,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 data class ProxyResponse(
@@ -58,7 +59,10 @@ class HttpProxy(private val client: OkHttpClient = defaultClient()) {
         client.newCall(builder.build()).execute().use { response ->
             val responseHeaders = response.headers
                 .toMultimap()
-                .mapValues { (_, values) -> values.joinToString(", ") }
+                .entries
+                .associate { (name, values) ->
+                    name.lowercase(Locale.US) to values.joinToString(", ")
+                }
             return ProxyResponse(
                 body = response.body?.string().orEmpty(),
                 code = response.code,

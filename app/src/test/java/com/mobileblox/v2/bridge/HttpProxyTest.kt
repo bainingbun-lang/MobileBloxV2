@@ -29,7 +29,7 @@ class HttpProxyTest {
 
         assertEquals("hello", response.body)
         assertEquals(201, response.code)
-        assertEquals("yes", response.headers["X-Test"])
+        assertEquals("yes", response.headers["x-test"])
 
         val request = server.takeRequest()
         assertEquals("/x", request.path)
