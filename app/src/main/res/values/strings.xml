@@ -10,6 +10,7 @@
     <string name="explorer">Explorer</string>
     <string name="console">Console</string>
     <string name="editor">Editor</string>
+    <string name="editor_hint">Escribe tu script Luau aquí…</string>
     <string name="project">Project</string>
     <string name="run_script">Run Script</string>
     <string name="stop_script">Stop Script</string>
