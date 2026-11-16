@@ -1,0 +1,36 @@
+<resources>
+    <string name="app_name">MobileBlox V2</string>
+    <string name="initializing">Initializing MobileBlox V2…</string>
+    <string name="execute">Execute</string>
+    <string name="new_file">New File</string>
+    <string name="open_file">Open File</string>
+    <string name="save_file">Save File</string>
+    <string name="settings">Settings</string>
+    <string name="ai_assistant">AI Assistant</string>
+    <string name="explorer">Explorer</string>
+    <string name="console">Console</string>
+    <string name="editor">Editor</string>
+    <string name="project">Project</string>
+    <string name="run_script">Run Script</string>
+    <string name="stop_script">Stop Script</string>
+    <string name="clear_console">Clear Console</string>
+    <string name="connect_ai">Connect AI</string>
+    <string name="disconnect_ai">Disconnect AI</string>
+    <string name="test_connection">Test Connection</string>
+    <string name="endpoint_url">Endpoint URL</string>
+    <string name="api_key">API Key</string>
+    <string name="model">Model</string>
+    <string name="timeout">Timeout (ms)</string>
+    <string name="connected">Connected</string>
+    <string name="disconnected">Disconnected</string>
+    <string name="connecting">Connecting…</string>
+    <string name="error">Error</string>
+    <string name="success">Success</string>
+    <string name="cancel">Cancel</string>
+    <string name="confirm">Confirm</string>
+    <string name="delete">Delete</string>
+    <string name="rename">Rename</string>
+    <string name="create_folder">Create Folder</string>
+    <string name="create_script">Create Script</string>
+    <string name="create_module">Create Module</string>
+</resources>

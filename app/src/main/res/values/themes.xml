@@ -1,0 +1,121 @@
+<resources>
+    <!-- Base theme for MobileBlox V2 -->
+    <style name="Theme.MobileBlox" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Primary brand color (Electric Blue) -->
+        <item name="colorPrimary">@color/accent_electric_blue</item>
+        <item name="colorPrimaryVariant">@color/accent_electric_blue_dim</item>
+        <item name="colorOnPrimary">@color/background_black</item>
+
+        <!-- Secondary brand color -->
+        <item name="colorSecondary">@color/accent_electric_blue</item>
+        <item name="colorSecondaryVariant">@color/accent_electric_blue_dim</item>
+        <item name="colorOnSecondary">@color/background_black</item>
+
+        <!-- Background & Surface -->
+        <item name="android:colorBackground">@color/background_black</item>
+        <item name="colorSurface">@color/panel_dark_gray</item>
+        <item name="colorOnSurface">@color/text_white</item>
+
+        <!-- Error -->
+        <item name="colorError">@color/error_red</item>
+        <item name="colorOnError">@color/text_white</item>
+
+        <!-- Text -->
+        <item name="android:textColorPrimary">@color/text_white</item>
+        <item name="android:textColorSecondary">@color/text_gray</item>
+
+        <!-- Window -->
+        <item name="android:windowBackground">@color/background_black</item>
+        <item name="android:navigationBarColor">@color/background_black</item>
+        <item name="android:statusBarColor">@color/panel_dark_gray</item>
+
+        <!-- Action bar -->
+        <item name="actionBarTheme">@style/Theme.MobileBlox.AppBarOverlay</item>
+        <item name="actionBarPopupTheme">@style/Theme.MobileBlox.PopupOverlay</item>
+
+        <!-- Button styles -->
+        <item name="materialButtonStyle">@style/Widget.MobileBlox.Button</item>
+        <item name="textInputStyle">@style/Widget.MobileBlox.TextInputLayout</item>
+        <item name="chipStyle">@style/Widget.MobileBlox.Chip</item>
+
+        <!-- Divider -->
+        <item name="dividerColor">@color/divider</item>
+    </style>
+
+    <!-- No Action Bar variant -->
+    <style name="Theme.MobileBlox.NoActionBar" parent="Theme.MobileBlox">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <!-- App Bar Overlay -->
+    <style name="Theme.MobileBlox.AppBarOverlay" parent="ThemeOverlay.Material3.Dark.ActionBar">
+        <item name="android:background">@color/panel_dark_gray</item>
+        <item name="titleTextColor">@color/text_white</item>
+    </style>
+
+    <!-- Popup Overlay -->
+    <style name="Theme.MobileBlox.PopupOverlay" parent="ThemeOverlay.Material3.Light">
+        <item name="android:background">@color/panel_dark_gray</item>
+        <item name="android:textColor">@color/text_white</item>
+    </style>
+
+    <!-- Button style: Black background, Electric Blue accent -->
+    <style name="Widget.MobileBlox.Button" parent="Widget.Material3.Button">
+        <item name="android:background">@color/button_black</item>
+        <item name="android:textColor">@color/text_white</item>
+        <item name="cornerRadius">4dp</item>
+        <item name="strokeColor">@color/accent_electric_blue</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="rippleColor">@color/accent_electric_blue</item>
+    </style>
+
+    <!-- TextInputLayout style -->
+    <style name="Widget.MobileBlox.TextInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxBackgroundColor">@color/panel_dark_gray</item>
+        <item name="boxStrokeColor">@color/divider</item>
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="boxStrokeWidthFocused">2dp</item>
+        <item name="boxStrokeColorFocused">@color/accent_electric_blue</item>
+        <item name="hintTextColor">@color/text_gray</item>
+        <item name="android:textColorHint">@color/text_gray</item>
+    </style>
+
+    <!-- Chip style -->
+    <style name="Widget.MobileBlox.Chip" parent="Widget.Material3.Chip.Entry">
+        <item name="chipBackgroundColor">@color/button_black</item>
+        <item name="android:textColor">@color/text_white</item>
+        <item name="chipStrokeColor">@color/accent_electric_blue</item>
+        <item name="chipStrokeWidth">1dp</item>
+        <item name="closeIconTint">@color/text_gray</item>
+    </style>
+
+    <!-- Toolbar style -->
+    <style name="Widget.MobileBlox.Toolbar" parent="Widget.Material3.Toolbar.Primary">
+        <item name="android:background">@color/panel_dark_gray</item>
+        <item name="titleTextColor">@color/text_white</item>
+        <item name="subtitleTextColor">@color/text_gray</item>
+    </style>
+
+    <!-- FAB style -->
+    <style name="Widget.MobileBlox.FAB" parent="Widget.Material3.FloatingActionButton">
+        <item name="backgroundTint">@color/button_black</item>
+        <item name="tint">@color/accent_electric_blue</item>
+        <item name="rippleColor">@color/accent_electric_blue</item>
+        <item name="elevation">8dp</item>
+    </style>
+
+    <!-- Dialog theme -->
+    <style name="Theme.MobileBlox.Dialog" parent="Theme.Material3.Dialog">
+        <item name="android:background">@color/panel_dark_gray</item>
+        <item name="colorSurface">@color/panel_dark_gray</item>
+        <item name="colorOnSurface">@color/text_white</item>
+    </style>
+
+    <!-- Bottom sheet theme -->
+    <style name="Theme.MobileBlox.BottomSheet" parent="Theme.Material3.BottomSheetDialog">
+        <item name="android:background">@color/panel_dark_gray</item>
+        <item name="colorSurface">@color/panel_dark_gray</item>
+        <item name="colorOnSurface">@color/text_white</item>
+    </style>
+</resources>

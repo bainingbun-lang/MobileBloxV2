@@ -1,0 +1,12 @@
+# MobileBlox V2 Local Properties
+# Copy to local.properties and fill in values
+
+## Android SDK/NDK
+sdk.dir=/home/user/Android/Sdk
+ndk.dir=/home/user/Android/Sdk/ndk/26.1.10909125
+
+## Signing (optional - for release builds)
+# KEYSTORE_PATH=keystore.jks
+# KEYSTORE_PASSWORD=your_keystore_password
+# KEY_ALIAS=your_key_alias
+# KEY_PASSWORD=your_key_password

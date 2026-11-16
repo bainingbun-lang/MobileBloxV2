@@ -1,0 +1,14 @@
+# Target labels
+ lz4-populate
+# Source files and their labels
+/data/data/com.termux/files/home/MobileBloxV2-main/build/termux-arm64/_deps/lz4-subbuild/CMakeFiles/lz4-populate
+/data/data/com.termux/files/home/MobileBloxV2-main/build/termux-arm64/_deps/lz4-subbuild/CMakeFiles/lz4-populate.rule
+/data/data/com.termux/files/home/MobileBloxV2-main/build/termux-arm64/_deps/lz4-subbuild/CMakeFiles/lz4-populate-complete.rule
+/data/data/com.termux/files/home/MobileBloxV2-main/build/termux-arm64/_deps/lz4-subbuild/lz4-populate-prefix/src/lz4-populate-stamp/lz4-populate-build.rule
+/data/data/com.termux/files/home/MobileBloxV2-main/build/termux-arm64/_deps/lz4-subbuild/lz4-populate-prefix/src/lz4-populate-stamp/lz4-populate-configure.rule
+/data/data/com.termux/files/home/MobileBloxV2-main/build/termux-arm64/_deps/lz4-subbuild/lz4-populate-prefix/src/lz4-populate-stamp/lz4-populate-download.rule
+/data/data/com.termux/files/home/MobileBloxV2-main/build/termux-arm64/_deps/lz4-subbuild/lz4-populate-prefix/src/lz4-populate-stamp/lz4-populate-install.rule
+/data/data/com.termux/files/home/MobileBloxV2-main/build/termux-arm64/_deps/lz4-subbuild/lz4-populate-prefix/src/lz4-populate-stamp/lz4-populate-mkdir.rule
+/data/data/com.termux/files/home/MobileBloxV2-main/build/termux-arm64/_deps/lz4-subbuild/lz4-populate-prefix/src/lz4-populate-stamp/lz4-populate-patch.rule
+/data/data/com.termux/files/home/MobileBloxV2-main/build/termux-arm64/_deps/lz4-subbuild/lz4-populate-prefix/src/lz4-populate-stamp/lz4-populate-test.rule
+/data/data/com.termux/files/home/MobileBloxV2-main/build/termux-arm64/_deps/lz4-subbuild/lz4-populate-prefix/src/lz4-populate-stamp/lz4-populate-update.rule

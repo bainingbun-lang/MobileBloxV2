@@ -1,0 +1,3 @@
+/data/data/com.termux/files/home/MobileBloxV2-main/build/termux-arm64/_deps/luau-subbuild/CMakeFiles/luau-populate.dir
+/data/data/com.termux/files/home/MobileBloxV2-main/build/termux-arm64/_deps/luau-subbuild/CMakeFiles/edit_cache.dir
+/data/data/com.termux/files/home/MobileBloxV2-main/build/termux-arm64/_deps/luau-subbuild/CMakeFiles/rebuild_cache.dir

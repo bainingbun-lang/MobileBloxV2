@@ -1,0 +1,14 @@
+# Target labels
+ ixwebsocket-populate
+# Source files and their labels
+/data/data/com.termux/files/home/MobileBloxV2-main/build/termux-arm64/_deps/ixwebsocket-subbuild/CMakeFiles/ixwebsocket-populate
+/data/data/com.termux/files/home/MobileBloxV2-main/build/termux-arm64/_deps/ixwebsocket-subbuild/CMakeFiles/ixwebsocket-populate.rule
+/data/data/com.termux/files/home/MobileBloxV2-main/build/termux-arm64/_deps/ixwebsocket-subbuild/CMakeFiles/ixwebsocket-populate-complete.rule
+/data/data/com.termux/files/home/MobileBloxV2-main/build/termux-arm64/_deps/ixwebsocket-subbuild/ixwebsocket-populate-prefix/src/ixwebsocket-populate-stamp/ixwebsocket-populate-build.rule
+/data/data/com.termux/files/home/MobileBloxV2-main/build/termux-arm64/_deps/ixwebsocket-subbuild/ixwebsocket-populate-prefix/src/ixwebsocket-populate-stamp/ixwebsocket-populate-configure.rule
+/data/data/com.termux/files/home/MobileBloxV2-main/build/termux-arm64/_deps/ixwebsocket-subbuild/ixwebsocket-populate-prefix/src/ixwebsocket-populate-stamp/ixwebsocket-populate-download.rule
+/data/data/com.termux/files/home/MobileBloxV2-main/build/termux-arm64/_deps/ixwebsocket-subbuild/ixwebsocket-populate-prefix/src/ixwebsocket-populate-stamp/ixwebsocket-populate-install.rule
+/data/data/com.termux/files/home/MobileBloxV2-main/build/termux-arm64/_deps/ixwebsocket-subbuild/ixwebsocket-populate-prefix/src/ixwebsocket-populate-stamp/ixwebsocket-populate-mkdir.rule
+/data/data/com.termux/files/home/MobileBloxV2-main/build/termux-arm64/_deps/ixwebsocket-subbuild/ixwebsocket-populate-prefix/src/ixwebsocket-populate-stamp/ixwebsocket-populate-patch.rule
+/data/data/com.termux/files/home/MobileBloxV2-main/build/termux-arm64/_deps/ixwebsocket-subbuild/ixwebsocket-populate-prefix/src/ixwebsocket-populate-stamp/ixwebsocket-populate-test.rule
+/data/data/com.termux/files/home/MobileBloxV2-main/build/termux-arm64/_deps/ixwebsocket-subbuild/ixwebsocket-populate-prefix/src/ixwebsocket-populate-stamp/ixwebsocket-populate-update.rule

@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"/data/data/com.termux/files/home/MobileBloxV2-main/build/termux-arm64/_deps/ixwebsocket-subbuild/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

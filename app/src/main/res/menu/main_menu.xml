@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- File operations -->
+    <item
+        android:id="@+id/action_new_file"
+        android:icon="@drawable/ic_add"
+        android:title="@string/new_file"
+        app:showAsAction="ifRoom|withText" />
+
+    <item
+        android:id="@+id/action_open_file"
+        android:icon="@drawable/ic_folder_open"
+        android:title="@string/open_file"
+        app:showAsAction="ifRoom|withText" />
+
+    <item
+        android:id="@+id/action_save_file"
+        android:icon="@drawable/ic_save"
+        android:title="@string/save_file"
+        app:showAsAction="ifRoom|withText" />
+
+    <!-- View toggles -->
+    <item
+        android:id="@+id/action_explorer"
+        android:icon="@drawable/ic_sidebar"
+        android:title="@string/explorer"
+        app:showAsAction="ifRoom|withText"
+        android:checkable="true" />
+
+    <item
+        android:id="@+id/action_console"
+        android:icon="@drawable/ic_terminal"
+        android:title="@string/console"
+        app:showAsAction="ifRoom|withText"
+        android:checkable="true" />
+
+    <item
+        android:id="@+id/action_ai_assistant"
+        android:icon="@drawable/ic_smart_toy"
+        android:title="@string/ai_assistant"
+        app:showAsAction="ifRoom|withText"
+        android:checkable="true" />
+
+    <!-- Settings -->
+    <item
+        android:id="@+id/action_settings"
+        android:icon="@drawable/ic_settings"
+        android:title="@string/settings"
+        app:showAsAction="never" />
+
+</menu>
