@@ -12,9 +12,20 @@
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
-    <!-- Native library loading -->
+    <!-- Shizuku API access -->
+    <uses-permission android:name="moe.shizuku.manager.permission.API_V23" />
+
+    <!-- Roblox package visibility (Android 11+) -->
+    <queries>
+        <package android:name="com.roblox.client" />
+        <package android:name="com.roblox.client.beta" />
+    </queries>
+
     <application
         android:name=".MobileBloxApplication"
         android:allowBackup="true"
@@ -26,7 +37,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MobileBlox"
         android:usesCleartextTraffic="true"
-        tools:targetApi="31">
+        tools:targetApi="34">
 
         <activity
             android:name=".MainActivity"
@@ -34,12 +45,24 @@
             android:launchMode="singleTop"
             android:theme="@style/Theme.MobileBlox.NoActionBar"
             android:windowSoftInputMode="adjustResize"
-            android:configChanges="orientation|screenSize|keyboardHidden|fontScale">
+            android:supportsPictureInPicture="true"
+            android:resizeableActivity="true"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboardHidden|fontScale">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Floating executor bubble -->
+        <service
+            android:name=".overlay.OverlayService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="floating script executor overlay" />
+        </service>
 
         <!-- File provider for sharing project files -->
         <provider
@@ -51,6 +74,14 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
+        <!-- Shizuku provider -->
+        <provider
+            android:name="rikka.shizuku.ShizukuProvider"
+            android:authorities="${applicationId}.shizuku"
+            android:enabled="true"
+            android:exported="true"
+            android:multiprocess="false" />
 
     </application>
 

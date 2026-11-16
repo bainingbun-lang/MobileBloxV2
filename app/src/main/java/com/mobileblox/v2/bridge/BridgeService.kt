@@ -30,15 +30,21 @@ object BridgeService {
         if (server != null) return
         token = BridgeTokenStore.getOrCreate(context)
         val files = FileRepository(File(context.filesDir, "MobileBlox"))
-        val dispatcher = BridgeDispatcher(files, HttpProxy(), scriptQueue) {
-            mapOf(
-                "name" to "MobileBloxV2",
-                "version" to BuildConfig.VERSION_NAME,
-                "platform" to "android",
-                "api" to Build.VERSION.SDK_INT,
-                "device" to Build.MODEL,
-            )
-        }
+        val dispatcher = BridgeDispatcher(
+            files,
+            HttpProxy(),
+            scriptQueue,
+            identify = {
+                mapOf(
+                    "name" to "MobileBloxV2",
+                    "version" to BuildConfig.VERSION_NAME,
+                    "platform" to "android",
+                    "api" to Build.VERSION.SDK_INT,
+                    "device" to Build.MODEL,
+                )
+            },
+            launchRoblox = { com.mobileblox.v2.launcher.RobloxLauncher.launch(context) },
+        )
         val candidate = BridgeServer(PORT, dispatcher, token)
         try {
             candidate.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false)

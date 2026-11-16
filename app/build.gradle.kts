@@ -6,19 +6,36 @@ plugins {
 android {
     namespace = "com.mobileblox.v2"
     compileSdk = 34
+    ndkVersion = "26.1.10909125"
 
     defaultConfig {
         applicationId = "com.mobileblox.v2"
         minSdk = 24
         targetSdk = 34
-        versionCode = 2
-        versionName = "2.0.0"
+        versionCode = 3
+        versionName = "2.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         ndk {
             abiFilters.clear()
             abiFilters.add("arm64-v8a")
+        }
+
+        externalNativeBuild {
+            cmake {
+                arguments += listOf("-DANDROID_STL=c++_shared")
+                cppFlags.add("-std=c++17")
+                cppFlags.add("-fexceptions")
+                cppFlags.add("-frtti")
+            }
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            path = file("src/main/cpp/CMakeLists.txt")
+            version = "3.22.1"
         }
     }
 
@@ -89,6 +106,10 @@ dependencies {
     // Local automation bridge + HTTP proxy
     implementation("org.nanohttpd:nanohttpd:2.3.1")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
+    // Privileged shell / permission granting via Shizuku
+    implementation("dev.rikka.shizuku:api:13.1.5")
+    implementation("dev.rikka.shizuku:provider:13.1.5")
 
     // Logging
     implementation("com.jakewharton.timber:timber:5.0.1")

@@ -10,6 +10,7 @@ local.properties
 *.so
 *.a
 *.o
+app/src/main/cpp/luau/
 
 # IDE
 .idea/

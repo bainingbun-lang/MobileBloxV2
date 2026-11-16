@@ -1,14 +1,18 @@
 package com.mobileblox.v2
 
+import android.app.PictureInPictureParams
+import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Rational
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.launch
+import com.mobileblox.v2.launcher.RobloxLauncher
 import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
@@ -22,13 +26,41 @@ class MainActivity : AppCompatActivity() {
         toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-        // Initialize UI fragments (Editor, Explorer, AI Chat, Console)
-        // For now, show placeholder
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, MainFragment())
             .commit()
 
         Timber.d("MainActivity created")
+    }
+
+    fun enterPip(): Boolean {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            return false
+        }
+        return try {
+            enterPictureInPictureMode(
+                PictureInPictureParams.Builder()
+                    .setAspectRatio(Rational(9, 16))
+                    .build(),
+            )
+            true
+        } catch (t: Throwable) {
+            Timber.w(t, "Cannot enter PiP")
+            false
+        }
+    }
+
+    fun launchRoblox() {
+        if (!RobloxLauncher.isInstalled(this)) {
+            Toast.makeText(this, R.string.roblox_missing, Toast.LENGTH_SHORT).show()
+            return
+        }
+        enterPip()
+        Handler(Looper.getMainLooper()).postDelayed({
+            if (!RobloxLauncher.launch(this)) {
+                Toast.makeText(this, R.string.roblox_missing, Toast.LENGTH_SHORT).show()
+            }
+        }, 350)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

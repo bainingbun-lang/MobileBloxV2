@@ -1,6 +1,10 @@
 package com.mobileblox.v2
 
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,9 +12,19 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.mobileblox.v2.bridge.BridgeService
 import com.mobileblox.v2.bridge.FileRepository
+import com.mobileblox.v2.launcher.RobloxLauncher
+import com.mobileblox.v2.luau.LuauBridge
+import com.mobileblox.v2.overlay.OverlayService
+import com.mobileblox.v2.shizuku.ShizukuManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import rikka.shizuku.Shizuku
 import timber.log.Timber
 import java.io.File
 import java.text.SimpleDateFormat
@@ -22,8 +36,24 @@ class MainFragment : Fragment() {
     private lateinit var editor: EditText
     private lateinit var statusText: TextView
     private lateinit var bridgeInfo: TextView
+    private lateinit var shizukuStatus: TextView
     private lateinit var logText: TextView
     private val files by lazy { FileRepository(File(requireContext().filesDir, "MobileBlox")) }
+
+    private val permissionListener = Shizuku.OnRequestPermissionResultListener { requestCode, grantResult ->
+        if (requestCode == ShizukuManager.REQUEST_CODE) {
+            activity?.runOnUiThread {
+                renderShizuku()
+                log(
+                    if (grantResult == PackageManager.PERMISSION_GRANTED) {
+                        "Shizuku autorizado"
+                    } else {
+                        "Shizuku denegado"
+                    },
+                )
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,24 +69,48 @@ class MainFragment : Fragment() {
         editor = view.findViewById(R.id.script_editor)
         statusText = view.findViewById(R.id.status_text)
         bridgeInfo = view.findViewById(R.id.bridge_info)
+        shizukuStatus = view.findViewById(R.id.shizuku_status)
         logText = view.findViewById(R.id.log_text)
 
-        view.findViewById<Button>(R.id.btn_execute).setOnClickListener { enqueueScript() }
+        view.findViewById<Button>(R.id.btn_execute).setOnClickListener { executeScript() }
         view.findViewById<Button>(R.id.btn_clear).setOnClickListener {
             editor.setText("")
             log("Editor limpiado")
         }
         view.findViewById<Button>(R.id.btn_save).setOnClickListener { saveScript() }
         view.findViewById<Button>(R.id.btn_open).setOnClickListener { openScript() }
+        view.findViewById<Button>(R.id.btn_launch_roblox).setOnClickListener { launchRoblox() }
+        view.findViewById<Button>(R.id.btn_pip).setOnClickListener {
+            if ((activity as? MainActivity)?.enterPip() != true) {
+                log("PiP no disponible en este dispositivo")
+            }
+        }
+        view.findViewById<Button>(R.id.btn_shizuku).setOnClickListener { requestShizuku() }
+        view.findViewById<Button>(R.id.btn_overlay).setOnClickListener { grantOverlay() }
+        view.findViewById<Button>(R.id.btn_bubble).setOnClickListener { toggleBubble() }
 
         renderStatus()
+        renderShizuku()
         log("Listo.")
         Timber.d("MainFragment created")
     }
 
+    override fun onStart() {
+        super.onStart()
+        ShizukuManager.addPermissionListener(permissionListener)
+    }
+
+    override fun onStop() {
+        ShizukuManager.removePermissionListener(permissionListener)
+        super.onStop()
+    }
+
     override fun onResume() {
         super.onResume()
-        if (::statusText.isInitialized) renderStatus()
+        if (::statusText.isInitialized) {
+            renderStatus()
+            renderShizuku()
+        }
     }
 
     private fun renderStatus() {
@@ -68,7 +122,15 @@ class MainFragment : Fragment() {
         }
     }
 
-    private fun enqueueScript() {
+    private fun renderShizuku() {
+        shizukuStatus.text = when {
+            !ShizukuManager.isAvailable() -> getString(R.string.shizuku_missing)
+            ShizukuManager.hasPermission() -> getString(R.string.shizuku_ready)
+            else -> getString(R.string.shizuku_permission_needed)
+        }
+    }
+
+    private fun executeScript() {
         val source = editor.text.toString()
         if (source.isBlank()) {
             toast("Script vacío")
@@ -76,7 +138,102 @@ class MainFragment : Fragment() {
         }
         val order = BridgeService.scriptQueue.execute(source)
         log("Encolado #$order (${source.lines().size} líneas)")
-        toast("Script encolado #$order")
+
+        if (!LuauBridge.available) {
+            log(getString(R.string.luau_missing))
+            return
+        }
+        log("Ejecutando en la app…")
+        viewLifecycleOwner.lifecycleScope.launch {
+            val output = withContext(Dispatchers.Default) {
+                runCatching { LuauBridge.run(source) }
+                    .getOrElse { "error: ${it.message}" }
+            }
+            log(output.trimEnd().ifEmpty { "(sin salida)" })
+        }
+    }
+
+    private fun launchRoblox() {
+        if (!RobloxLauncher.isInstalled(requireContext())) {
+            toast(getString(R.string.roblox_missing))
+            return
+        }
+        log("Abriendo Roblox…")
+        val activity = activity as? MainActivity
+        if (activity != null) {
+            activity.launchRoblox()
+        } else {
+            RobloxLauncher.launch(requireContext())
+        }
+    }
+
+    private fun requestShizuku() {
+        if (!ShizukuManager.isAvailable()) {
+            toast(getString(R.string.shizuku_missing))
+            return
+        }
+        if (ShizukuManager.hasPermission()) {
+            toast(getString(R.string.shizuku_ready))
+            return
+        }
+        log("Solicitando permiso de Shizuku…")
+        ShizukuManager.requestPermission()
+    }
+
+    private fun grantOverlay() {
+        if (!ShizukuManager.hasPermission()) {
+            toast("Autoriza Shizuku primero")
+            return
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            log("Concediendo permiso de overlay…")
+            val result = withContext(Dispatchers.IO) { ShizukuManager.grantOverlay() }
+            log("Overlay: ${result.stdout.ifBlank { result.stderr.ifBlank { "código ${result.code}" } }}")
+            if (Settings.canDrawOverlays(requireContext())) {
+                log("Permiso de overlay concedido")
+            } else {
+                log("Abre Ajustes > Permisos especiales si no se concedió")
+            }
+        }
+    }
+
+    private fun toggleBubble() {
+        if (Settings.canDrawOverlays(requireContext())) {
+            startBubble()
+            return
+        }
+        if (ShizukuManager.hasPermission()) {
+            viewLifecycleOwner.lifecycleScope.launch {
+                val result = withContext(Dispatchers.IO) { ShizukuManager.grantOverlay() }
+                log("Overlay: ${result.stdout.ifBlank { result.stderr }}")
+                if (Settings.canDrawOverlays(requireContext())) {
+                    startBubble()
+                } else {
+                    openOverlaySettings()
+                }
+            }
+        } else {
+            openOverlaySettings()
+        }
+    }
+
+    private fun startBubble() {
+        ContextCompat.startForegroundService(
+            requireContext(),
+            Intent(requireContext(), OverlayService::class.java),
+        )
+        log("Burbuja flotante iniciada")
+    }
+
+    private fun openOverlaySettings() {
+        runCatching {
+            startActivity(
+                Intent(
+                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:${requireContext().packageName}"),
+                ),
+            )
+        }
     }
 
     private fun saveScript() {
