@@ -14,7 +14,7 @@ Además se añadió lo que pediste para el flujo tipo launcher:
 
 - Abrir Roblox desde la app.
 - Minimizar la app en picture-in-picture (PiP).
-- Burbuja flotante sobre cualquier app (incluido Roblox); al tocarla se abre el executor.
+- Burbuja flotante móvil sobre cualquier app (incluido Roblox); al tocarla se abre un executor centrado con editor y salida.
 - Permisos privilegiados vía **Shizuku** (shell ADB): conceder overlay, notificaciones y ejecutar comandos.
 - **Compilador y runtime Luau nativo** (arm64-v8a) para ejecutar scripts de verdad dentro de la app.
 
@@ -54,7 +54,7 @@ Ruta local: `/data/data/com.termux/files/usr/tmp/opencode/ExternalExecutor` (com
 | `launchroblox` | `launcher/RobloxLauncher.kt` | Funcional |
 | Editor + ejecución local | `MainFragment.kt` | Funcional |
 | Abrir Roblox + PiP | `MainActivity.kt` | Funcional (PiP según dispositivo) |
-| Burbuja flotante | `overlay/OverlayService.kt` | Funcional con permiso overlay |
+| Burbuja flotante + panel centrado | `overlay/OverlayService.kt` + `overlay_executor.xml` | Funcional con permiso overlay |
 | Pruebas JVM | 12 pruebas en `app/src/test/.../bridge/` | Pasando |
 
 ## 4. Shizuku
@@ -66,7 +66,7 @@ Requisitos:
 1. Instalar la app **Shizuku** (Play Store / GitHub) y activarla por ADB o root.
 2. Abrir MobileBlox V2 → **Autorizar Shizuku** → aceptar.
 3. Pulsar **Permiso overlay** (ejecuta `appops set com.mobileblox.v2 SYSTEM_ALERT_WINDOW allow`).
-4. Pulsar **Burbuja flotante**; la burbuja queda sobre Roblox y al tocarla se abre el executor.
+4. Pulsar **Burbuja flotante**; la burbuja queda sobre Roblox, se puede arrastrar y al tocarla se abre el executor centrado.
 
 Comandos disponibles por el bridge (si Shizuku está autorizado):
 
@@ -93,8 +93,8 @@ El APK contiene `lib/arm64-v8a/libmobileblox_luau.so` (≈1.2 MB) y `libc++_shar
 2. (Opcional) Autorizar Shizuku y conceder overlay.
 3. Pulsar **Burbuja flotante** para tener el acceso flotante.
 4. Pulsar **Abrir Roblox** (o abrir Roblox manualmente).
-5. Tocar la burbuja → se abre el executor.
-6. Escribir un script Luau y pulsar **Execute**: se ejecuta en el runtime de la app y se muestra la salida en el log. También se encola para clientes del bridge (`listen`).
+5. Tocar la burbuja → se abre el executor flotante centrado (editor + salida + botones Execute/Limpiar/Cerrar). La burbuja se arrastra para moverla.
+6. Escribir un script Luau y pulsar **Execute**: se ejecuta en el runtime de la app y la salida aparece en el panel. También se encola para clientes del bridge (`listen`).
 
 ## 7. Seguridad
 

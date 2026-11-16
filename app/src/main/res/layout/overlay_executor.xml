@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/overlay_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#B3000000"
+    android:clickable="true"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
+
+    <LinearLayout
+        android:id="@+id/overlay_panel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="18dp"
+        android:background="@drawable/panel_background"
+        android:clickable="true"
+        android:focusable="true"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/executor_title"
+            android:textColor="@color/accent_electric_blue"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/overlay_editor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@color/panel_darker_gray"
+            android:fontFamily="monospace"
+            android:gravity="top|start"
+            android:hint="@string/editor_hint"
+            android:inputType="textMultiLine|textNoSuggestions"
+            android:maxLines="10"
+            android:minLines="6"
+            android:padding="10dp"
+            android:scrollbars="vertical"
+            android:textColor="@color/text_white"
+            android:textColorHint="@color/text_dim"
+            android:textSize="13sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/overlay_execute"
+                style="@style/Widget.MobileBlox.Button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/execute"
+                android:textSize="11sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/overlay_clear"
+                style="@style/Widget.MobileBlox.Button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:layout_weight="1"
+                android:text="@string/clear"
+                android:textSize="11sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/overlay_close"
+                style="@style/Widget.MobileBlox.Button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:layout_weight="1"
+                android:text="@string/close"
+                android:textSize="11sp" />
+        </LinearLayout>
+
+        <ScrollView
+            android:id="@+id/overlay_output_scroll"
+            android:layout_width="match_parent"
+            android:layout_height="130dp"
+            android:layout_marginTop="10dp"
+            android:background="@color/panel_darker_gray"
+            android:padding="8dp">
+
+            <TextView
+                android:id="@+id/overlay_output"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="monospace"
+                android:textColor="@color/text_gray"
+                android:textIsSelectable="true"
+                android:textSize="12sp" />
+        </ScrollView>
+
+    </LinearLayout>
+</FrameLayout>

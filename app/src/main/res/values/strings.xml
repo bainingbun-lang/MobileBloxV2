@@ -21,8 +21,13 @@
     <string name="shizuku_ready">Shizuku: autorizado</string>
     <string name="shizuku_permission_needed">Shizuku: falta autorización</string>
     <string name="overlay_running">Executor flotante activo</string>
-    <string name="overlay_hint">Toca la burbuja para abrir el executor</string>
+    <string name="overlay_hint">Toca la burbuja para abrir el executor flotante</string>
     <string name="overlay_channel">Overlay del executor</string>
+    <string name="executor_title">Executor</string>
+    <string name="close">Cerrar</string>
+    <string name="clear">Limpiar</string>
+    <string name="empty_script">Script vacío</string>
+    <string name="running">Ejecutando…</string>
     <string name="roblox_missing">Roblox no está instalado</string>
     <string name="luau_missing">Luau nativo no disponible en este build</string>
     <string name="project">Project</string>
