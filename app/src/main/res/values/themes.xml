@@ -36,7 +36,6 @@
         <!-- Button styles -->
         <item name="materialButtonStyle">@style/Widget.MobileBlox.Button</item>
         <item name="textInputStyle">@style/Widget.MobileBlox.TextInputLayout</item>
-        <item name="chipStyle">@style/Widget.MobileBlox.Chip</item>
 
     </style>
 
@@ -76,30 +75,6 @@
         <item name="boxStrokeWidthFocused">2dp</item>
         <item name="hintTextColor">@color/text_gray</item>
         <item name="android:textColorHint">@color/text_gray</item>
-    </style>
-
-    <!-- Chip style -->
-    <style name="Widget.MobileBlox.Chip" parent="Widget.Material3.Chip.Entry">
-        <item name="chipBackgroundColor">@color/button_black</item>
-        <item name="android:textColor">@color/text_white</item>
-        <item name="chipStrokeColor">@color/accent_electric_blue</item>
-        <item name="chipStrokeWidth">1dp</item>
-        <item name="closeIconTint">@color/text_gray</item>
-    </style>
-
-    <!-- Toolbar style -->
-    <style name="Widget.MobileBlox.Toolbar" parent="Widget.Material3.Toolbar.Primary">
-        <item name="android:background">@color/panel_dark_gray</item>
-        <item name="titleTextColor">@color/text_white</item>
-        <item name="subtitleTextColor">@color/text_gray</item>
-    </style>
-
-    <!-- FAB style -->
-    <style name="Widget.MobileBlox.FAB" parent="Widget.Material3.FloatingActionButton">
-        <item name="backgroundTint">@color/button_black</item>
-        <item name="tint">@color/accent_electric_blue</item>
-        <item name="rippleColor">@color/accent_electric_blue</item>
-        <item name="elevation">8dp</item>
     </style>
 
     <!-- Dialog theme -->
